@@ -285,7 +285,7 @@ static PyObject *rpmfd_write(rpmfdObject *s, PyObject *args, PyObject *kwds)
     if (s->fd == NULL) return err_closed();
 
     Py_BEGIN_ALLOW_THREADS 
-    rc = Fwrite(buf, 1, size, s->fd);
+    rc = Fwrite(buf, 1, size, s->fd, 0);
     Py_END_ALLOW_THREADS 
 
     if (Ferror(s->fd)) {

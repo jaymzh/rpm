@@ -42,7 +42,7 @@ ssize_t Fread(void * buf, size_t size, size_t nmemb, FD_t fd);
 /** \ingroup rpmio
  * fwrite(3) clone.
  */
-ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd);
+ssize_t Fwrite(const void * buf, size_t size, size_t nmemb, FD_t fd, int fsync);
 
 /** \ingroup rpmio
  * fseek(3) clone.

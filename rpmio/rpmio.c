@@ -419,7 +419,7 @@ off_t ufdCopy(FD_t sfd, FD_t tfd)
 	rdbytes = Fread(buf, sizeof(buf[0]), sizeof(buf), sfd);
 
 	if (rdbytes > 0) {
-	    wrbytes = Fwrite(buf, sizeof(buf[0]), rdbytes, tfd);
+	    wrbytes = Fwrite(buf, sizeof(buf[0]), rdbytes, tfd, 0);
 	    if (wrbytes != rdbytes) {
 		total = -1;
 		break;
@@ -1073,7 +1073,7 @@ ssize_t Fread(void *buf, size_t size, size_t nmemb, FD_t fd)
     return rc;
 }
 
-ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
+ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd, int do_fsync)
 {
     ssize_t rc = -1;
 
@@ -1084,6 +1084,8 @@ ssize_t Fwrite(const void *buf, size_t size, size_t nmemb, FD_t fd)
 	fdstat_enter(fd, FDSTAT_WRITE);
 	do {
 	    rc = (_write ? _write(fps, buf, size * nmemb) : -2);
+            if (do_fsync)
+                fsync(fps->fdno);
 	} while (rc == -1 && errno == EINTR);
 	fdstat_exit(fd, FDSTAT_WRITE, rc);
 

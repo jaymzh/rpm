@@ -129,7 +129,7 @@ static int rpmcpioWritePad(rpmcpio_t cpio, ssize_t modulo)
     left = (modulo - ((cpio->offset) % modulo)) % modulo;
     if (left <= 0)
         return 0;
-    written = Fwrite(&buf, left, 1, cpio->fd);
+    written = Fwrite(&buf, left, 1, cpio->fd, 0);
     if (written != left) {
         return RPMERR_WRITE_FAILED;
     }
@@ -181,18 +181,18 @@ static int rpmcpioTrailerWrite(rpmcpio_t cpio)
     memcpy(&hdr.nlink, "00000001", 8);
     memcpy(&hdr.namesize, "0000000b", 8);
 
-    written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
+    written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != 6) {
         return RPMERR_WRITE_FAILED;
     }
 
-    written = Fwrite(&hdr, PHYS_HDR_SIZE, 1, cpio->fd);
+    written = Fwrite(&hdr, PHYS_HDR_SIZE, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != PHYS_HDR_SIZE) {
         return RPMERR_WRITE_FAILED;
     }
-    written = Fwrite(&CPIO_TRAILER, sizeof(CPIO_TRAILER), 1, cpio->fd);
+    written = Fwrite(&CPIO_TRAILER, sizeof(CPIO_TRAILER), 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != sizeof(CPIO_TRAILER)) {
         return RPMERR_WRITE_FAILED;
@@ -252,19 +252,19 @@ int rpmcpioHeaderWrite(rpmcpio_t cpio, char * path, struct stat * st)
 
     memcpy(hdr->checksum, "00000000", 8);
 
-    written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd);
+    written = Fwrite(CPIO_NEWC_MAGIC, 6, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != 6) {
         return RPMERR_WRITE_FAILED;
     }
 
-    written = Fwrite(hdr, PHYS_HDR_SIZE, 1, cpio->fd);
+    written = Fwrite(hdr, PHYS_HDR_SIZE, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != PHYS_HDR_SIZE) {
         return RPMERR_WRITE_FAILED;
     }
 
-    written = Fwrite(path, len, 1, cpio->fd);
+    written = Fwrite(path, len, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != len) {
         return RPMERR_WRITE_FAILED;
@@ -300,13 +300,13 @@ int rpmcpioStrippedHeaderWrite(rpmcpio_t cpio, int fx, off_t fsize)
 
     SET_NUM_FIELD(hdr->fx, fx, field);
 
-    written = Fwrite(CPIO_STRIPPED_MAGIC, 6, 1, cpio->fd);
+    written = Fwrite(CPIO_STRIPPED_MAGIC, 6, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != 6) {
         return RPMERR_WRITE_FAILED;
     }
 
-    written = Fwrite(hdr, STRIPPED_PHYS_HDR_SIZE, 1, cpio->fd);
+    written = Fwrite(hdr, STRIPPED_PHYS_HDR_SIZE, 1, cpio->fd, 0);
     cpio->offset += written;
     if (written != STRIPPED_PHYS_HDR_SIZE) {
         return RPMERR_WRITE_FAILED;
@@ -330,7 +330,7 @@ ssize_t rpmcpioWrite(rpmcpio_t cpio, const void * buf, size_t size)
     // Do not write beyond file length
     left = cpio->fileend - cpio->offset;
     size = size > left ? left : size;
-    written = Fwrite(buf, size, 1, cpio->fd);
+    written = Fwrite(buf, size, 1, cpio->fd, 0);
     cpio->offset += written;
     return written;
 }

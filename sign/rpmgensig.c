@@ -167,7 +167,7 @@ static int copyFile(FD_t *sfdp, const char *sfnp,
 
     while ((count = Fread(buf, sizeof(buf[0]), sizeof(buf), *sfdp)) > 0)
     {
-	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp) != count) {
+	if (Fwrite(buf, sizeof(buf[0]), count, *tfdp, 0) != count) {
 	    rpmlog(RPMLOG_ERR, _("%s: Fwrite failed: %s\n"), tfnp,
 		Fstrerror(*tfdp));
 	    goto exit;
@@ -297,7 +297,7 @@ static int runGPG(sigTarget sigt, const char *sigfile)
     size = sigt->size;
     wantCount = size < sizeof(buf) ? size : sizeof(buf);
     while ((count = Fread(buf, sizeof(buf[0]), wantCount, sigt->fd)) > 0) {
-	Fwrite(buf, sizeof(buf[0]), count, fnamedPipe);
+	Fwrite(buf, sizeof(buf[0]), count, fnamedPipe, 0);
 	if (Ferror(fnamedPipe)) {
 	    rpmlog(RPMLOG_ERR, _("Could not write to pipe\n"));
 	    goto exit;

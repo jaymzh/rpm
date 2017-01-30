@@ -18,6 +18,7 @@ struct rpmInstallArguments_s rpmIArgs = {
     0,			/* incldocs */
     NULL,		/* relocations */
     NULL,		/* prefix */
+    0,                  /* fsync */
 };
 
 #define	POPT_RELOCATE		-1021
@@ -95,6 +96,10 @@ static void installArgCallback( poptContext con,
 		| RPMPROB_FILTER_OLDPACKAGE );
 	break;
 
+    case RPMCLI_POPT_FSYNC:
+        ia->transFlags |= RPMTRANS_FLAG_FSYNC;
+        break;
+
     case RPMCLI_POPT_NOSCRIPTS:
 	ia->transFlags |= (_noTransScripts | _noTransTriggers);
 	break;
@@ -141,6 +146,9 @@ struct poptOption rpmInstallPoptTable[] = {
 
  { "force", '\0', 0, NULL, RPMCLI_POPT_FORCE,
 	N_("short hand for --replacepkgs --replacefiles"), NULL},
+
+ { "force-fsync-dangerous", '\0', 0, NULL, RPMCLI_POPT_FSYNC,
+	N_("Force and fsync() after each write(). Dangerous."), NULL},
 
  { "freshen", 'F', POPT_BIT_SET, &rpmIArgs.installInterfaceFlags,
 	(INSTALL_UPGRADE|INSTALL_FRESHEN|INSTALL_INSTALL),

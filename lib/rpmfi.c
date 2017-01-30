@@ -18,6 +18,10 @@
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
 #include "lib/fsm.h"	/* rpmpsm stuff for now */
 #include "lib/rpmug.h"
+#include "lib/psm.h"
+#include "lib/rpmtypes.h"
+#include "lib/rpmts.h"
+#include "lib/rpmts_internal.h"
 #include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
 
 #include "debug.h"
@@ -2208,6 +2212,8 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	fdInitDigest(fd, digestalgo, 0);
     }
 
+    int do_fsync = (psm->ts->transFlags & RPMTRANS_FLAG_FSYNC);
+
     while (left) {
 	size_t len;
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
@@ -2215,7 +2221,8 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	    rc = RPMERR_READ_FAILED;
 	    goto exit;
 	}
-	if ((Fwrite(buf, sizeof(*buf), len, fd) != len) || Ferror(fd)) {
+
+	if ((Fwrite(buf, sizeof(*buf), len, fd, do_fsync) != len) || Ferror(fd)) {
 	    rc = RPMERR_WRITE_FAILED;
 	    goto exit;
 	}

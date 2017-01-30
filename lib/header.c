@@ -998,12 +998,12 @@ int headerWrite(FD_t fd, Header h, int magicp)
 	return 1;
 
     if (magicp == HEADER_MAGIC_YES) {
-	nb = Fwrite(rpm_header_magic, sizeof(rpm_header_magic), 1, fd);
+	nb = Fwrite(rpm_header_magic, sizeof(rpm_header_magic), 1, fd, 0);
 	if (nb != sizeof(rpm_header_magic))
 	    goto exit;
     }
 
-    nb = Fwrite(uh, sizeof(char), length, fd);
+    nb = Fwrite(uh, sizeof(char), length, fd, 0);
 
 exit:
     free(uh);

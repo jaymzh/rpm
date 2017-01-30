@@ -82,7 +82,7 @@ rpmRC rpmLeadWrite(FD_t fd, Header h)
 	l.osnum = htons(l.osnum);
 	l.signature_type = htons(l.signature_type);
 	    
-	if (Fwrite(&l, 1, sizeof(l), fd) == sizeof(l))
+	if (Fwrite(&l, 1, sizeof(l), fd, 0) == sizeof(l))
 	    rc = RPMRC_OK;
     }
 

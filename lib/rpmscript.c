@@ -243,10 +243,10 @@ static char * writeScript(const char *cmd, const char *script)
     if (rpmIsDebug() && (rstreq(cmd, "/bin/sh") || rstreq(cmd, "/bin/bash"))) {
 	static const char set_x[] = "set -x\n";
 	/* Assume failures will be caught by the write below */
-	Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd);
+	Fwrite(set_x, sizeof(set_x[0]), sizeof(set_x)-1, fd, 0);
     }
 
-    ok = (Fwrite(script, sizeof(script[0]), slen, fd) == slen);
+    ok = (Fwrite(script, sizeof(script[0]), slen, fd, 0) == slen);
 
 exit:
     if (!ok) fn = _free(fn);
