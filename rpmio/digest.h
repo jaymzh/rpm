@@ -69,5 +69,5 @@ size_t pgpMpiLen(const uint8_t *p)
 {
     return (2 + ((pgpMpiBits(p)+7)>>3));
 }
-	
+
 #endif /* _RPMDIGEST_H */

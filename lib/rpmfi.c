@@ -18,7 +18,11 @@
 #include "lib/cpio.h"	/* XXX CPIO_FOO */
 #include "lib/fsm.h"	/* rpmpsm stuff for now */
 #include "lib/rpmug.h"
+#include "lib/rpmtypes.h"
+#include "lib/rpmts.h"
+#include "lib/rpmts_internal.h"
 #include "rpmio/rpmio_internal.h"       /* fdInit/FiniDigest */
+#include "rpmio/rpmio.h"       /* Fileno */
 
 #include "debug.h"
 
@@ -2208,6 +2212,9 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	fdInitDigest(fd, digestalgo, 0);
     }
 
+    int do_fsync = rpmExpandNumeric("%{force_fsync}");
+    int fdno = Fileno(fd);
+
     while (left) {
 	size_t len;
 	len = (left > sizeof(buf) ? sizeof(buf) : left);
@@ -2215,10 +2222,18 @@ int rpmfiArchiveReadToFilePsm(rpmfi fi, FD_t fd, int nodigest, rpmpsm psm)
 	    rc = RPMERR_READ_FAILED;
 	    goto exit;
 	}
+
 	if ((Fwrite(buf, sizeof(*buf), len, fd) != len) || Ferror(fd)) {
 	    rc = RPMERR_WRITE_FAILED;
 	    goto exit;
 	}
+        if (do_fsync) {
+            /* do we need fdstat_enter/exit here? */
+            if (fsync(fdno)) {
+               rc = RPMERR_WRITE_FAILED;
+               goto exit;
+            }
+        }
 
 	rpmpsmNotify(psm, RPMCALLBACK_INST_PROGRESS, rpmfiArchiveTell(fi));
 	left -= len;

@@ -165,6 +165,7 @@ rpm	alias --ftpproxy	--define '_httpproxy !#:+'
 rpm	alias --httpport	--define '_httpport !#:+'
 #	[--httpproxy <host>]	"hostname or IP of http proxy"
 rpm	alias --httpproxy	--define '_httpproxy !#:+'
+rpm     alias --force-fsync --define 'force_fsync 1'
 
 # Minimally preserve commonly used switches from cli split-up
 rpm	exec --addsign		rpmsign --addsign
